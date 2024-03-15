@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Openfort;
 using Openfort.Model;
 using Openfort.Recovery;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -17,16 +18,16 @@ public class LoginManager : MonoBehaviour
     private string mIdentityToken;
     private string mAccessToken;
     private const string PublishableKey = "pk_test_54cebc96-493c-553c-9192-4417cc4d8a4b";
-    //private const string PublishableKey = "pk_test_ce9b176a-c409-5496-9d35-1daff40ac20e";
 
     private OpenfortSDK mOpenfort;
+
+    public TextMeshProUGUI statusText;
 
     void Start()
     {
         //loginButton.onClick.AddListener(OpenfortLogin);
-        mintButton.onClick.AddListener(Mint);
-        GooglePlayLogin();
-        
+        //mintButton.onClick.AddListener(Mint);
+        //GooglePlayLogin();
     }
 
     private async void GooglePlayLogin ()
@@ -74,9 +75,11 @@ public class LoginManager : MonoBehaviour
         */
     }
 
+    // Called from Javascript
     public async void OnSignInSuccess(string idToken)
     {
         Debug.Log("Google Sign-In Success! Token: " + idToken);
+        statusText.text = "Google Sign-In Success.";
         
         Debug.Log("Openfort Auth");
         mOpenfort = new OpenfortSDK(PublishableKey); 
@@ -91,6 +94,13 @@ public class LoginManager : MonoBehaviour
         {
             await mOpenfort.ConfigureEmbeddedRecovery(new PasswordRecovery("secret"));
         }
+    }
+    
+    // Called from Javascript
+    public void OnSignInError(string errorMessage)
+    {
+        statusText.text = errorMessage;
+        Debug.Log(errorMessage);
     }
 
     public class RootObject

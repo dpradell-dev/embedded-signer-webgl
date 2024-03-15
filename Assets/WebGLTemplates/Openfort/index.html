@@ -160,23 +160,8 @@
               const email = error.customData.email;
               // The AuthCredential type that was used.
               const credential = GoogleAuthProvider.credentialFromError(error);
-              unityInstance.SendMessage("FirebaseAuthController", "OnSignInError", errorMessage);
+              unityInstance.SendMessage("LoginManager", "OnSignInError", errorMessage);
             });
-          
-
-          function signInWithGoogle() {
-            var provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider)
-                .then((result) => {
-                    const idToken = result.credential.idToken;
-                    // Pass token to Unity 
-                    SendMessage("FirebaseAuthController", "OnGoogleSignInSuccess", idToken);
-                })
-                .catch((error) => {
-                    const errorMessage = error.message;
-                    SendMessage("FirebaseAuthController", "OnGoogleSignInError", errorMessage);
-                });
-          }
         }).catch((message) => {
           alert(message);
         });
