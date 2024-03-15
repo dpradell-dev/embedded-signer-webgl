@@ -17,7 +17,7 @@ public class LoginManager : MonoBehaviour
     public Button mintButton;
     private string mIdentityToken;
     private string mAccessToken;
-    private const string PublishableKey = "pk_test_54cebc96-493c-553c-9192-4417cc4d8a4b";
+    private const string PublishableKey = "pk_test_e6f78a9a-26d2-5bd7-98bd-81d9a2a8c3e2";
 
     private OpenfortSDK mOpenfort;
 
