@@ -15,11 +15,14 @@ public class LoginManager : MonoBehaviour
 {
     public Button loginButton;
     public Button mintButton;
+    public Button openLinkButton;
+    
     private string mIdentityToken;
     private string mAccessToken;
-    private const string PublishableKey = "pk_test_e6f78a9a-26d2-5bd7-98bd-81d9a2a8c3e2";
+    private const string PublishableKey = "pk_test_505bc088-905e-5a43-b60b-4c37ed1f887a";
 
     private OpenfortSDK mOpenfort;
+    private string transactionHash;
 
     public TextMeshProUGUI statusText;
 
@@ -107,37 +110,45 @@ public class LoginManager : MonoBehaviour
     {
         public TransactionIntentResponse Data { get; set; }
     }
-    private async void Mint()
+    public async void OnMintClicked()
     {
-        var webRequest = UnityWebRequest.Post("http://192.168.0.13:4000/mint", "");
+        mintButton.interactable = false;
+        var webRequest = UnityWebRequest.Post("https://descriptive-night-production.up.railway.app/mint", "");
         webRequest.SetRequestHeader("Authorization", "Bearer " + mAccessToken);
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.SetRequestHeader("Accept", "application/json");
         await SendWebRequestAsync(webRequest);
-        
+
         Debug.Log("Mint request sent");
         if (webRequest.result != UnityWebRequest.Result.Success)
         {
             Debug.Log("Mint Failed: " + webRequest.error);
             return;
         }
-        
-        
+
+
         var responseText = webRequest.downloadHandler.text;
         Debug.Log("Mint Response: " + responseText);
-        var responseJson = JsonConvert.DeserializeObject<RootObject> (responseText);
+        var responseJson = JsonConvert.DeserializeObject<RootObject>(responseText);
         var id = responseJson.Data.Id;
         if (responseJson.Data.NextAction == null)
         {
             Debug.Log("No Next Action");
             return;
         }
-        
+
         var nextAction = responseJson.Data.NextAction.Payload.UserOpHash;
 
         Debug.Log("Next Action: " + nextAction);
         var intentResponse = await mOpenfort.SendSignatureTransactionIntentRequest(id, nextAction);
-        Debug.Log("Intent Response: " + intentResponse);
+        transactionHash = intentResponse.Response.TransactionHash;
+        openLinkButton.gameObject.SetActive(true);
+        mintButton.interactable = true;
+    }
+    
+    public void OpenLink()
+    {
+        Application.OpenURL("https://mumbai.polygonscan.com/tx/" + transactionHash);
     }
     
     private Task SendWebRequestAsync(UnityWebRequest webRequest)
