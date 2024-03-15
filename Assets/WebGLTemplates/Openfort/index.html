@@ -146,10 +146,22 @@
               // This gives you a Google Access Token. You can use it to access the Google API.
               const credential = GoogleAuthProvider.credentialFromResult(result);
               console.log(credential);
-              const token = credential.idToken;
+              //const token = credential.idToken;
               // The signed-in user info.
               const user = result.user;
-              unityInstance.SendMessage("LoginManager", "OnSignInSuccess", token);
+
+              /*
+              signInWithCredential(credential).addOnCompleteListener(this, task => 
+              {
+                const ftoken = task.getResult().getUser().getIdToken(false).getResult().getToken();
+                unityInstance.SendMessage("LoginManager", "OnSignInSuccess", ftoken);
+              });
+              */
+
+              user.getIdToken().then(token => {
+                  //send the token to the backend...
+                  unityInstance.SendMessage("LoginManager", "OnSignInSuccess", token);
+              });
 
             }).catch((error) => {
               console.log(error.message);
